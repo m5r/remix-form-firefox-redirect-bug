@@ -1,3 +1,4 @@
+import { setTimeout as wait } from "node:timers/promises";
 import { type ActionArgs, redirect } from "@remix-run/node";
 import { SocialsProvider } from "remix-auth-socials";
 
@@ -13,6 +14,8 @@ export async function action({ request, params }: ActionArgs) {
   if (provider !== SocialsProvider.GITHUB) {
     return redirect("/sign-in");
   }
+
+  await wait(1000);
 
   const user = await authenticator.authenticate(provider, request, { failureRedirect: "/sign-in" });
   const session = await getSession(request);
