@@ -1,23 +1,22 @@
 import { type LoaderArgs } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-
-import { authenticator } from "~/utils/auth.server";
+import { getSession } from "~/utils/session.server";
 
 export async function loader({ request }: LoaderArgs) {
-  const user = await authenticator.isAuthenticated(request);
+  const session = await getSession(request);
 
-  return { user };
+  return { authenticated: session.get("authenticated") as boolean | undefined };
 }
 
 export default function Index() {
-  const { user } = useLoaderData<typeof loader>();
+  const { authenticated } = useLoaderData<typeof loader>();
 
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
       <h1>Welcome to Remix</h1>
-      <p>Hello, {user?.fullName || "世界"}</p>
+      <p>Hello, {authenticated ? "authenticated user" : "世界"}</p>
       <section>
-        {user ? (
+        {authenticated ? (
           <Link to="/sign-out">Sign out</Link>
         ) : (
           <Link to="sign-in">Sign in</Link>

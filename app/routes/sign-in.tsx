@@ -1,10 +1,12 @@
 import { type LoaderArgs, redirect } from "@remix-run/node";
-import { SocialsProvider } from "remix-auth-socials";
+import { Form } from "@remix-run/react";
 
-import { authenticator } from "~/utils/auth.server";
+import { getSession } from "~/utils/session.server";
 
 export async function loader({ request }: LoaderArgs) {
-  if (await authenticator.isAuthenticated(request)) {
+  const session = await getSession(request);
+
+  if (session.get("authenticated") === true) {
     throw redirect("/");
   }
 
@@ -12,14 +14,12 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export default function SignInPage() {
- return (
-   <form method="post" action={`/sign-in/${SocialsProvider.GITHUB}`}>
-     <button
-       type="submit"
-       className="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white py-2 px-4 font-medium text-brand-700 shadow-sm hover:bg-gray-50"
-     >
-       Sign in with GitHub
-     </button>
-   </form>
- );
+  return (
+    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
+      <h1>Sign In Page</h1>
+      <Form method="post" action="/sign-in/provider">
+        <button type="submit">Sign in</button>
+      </Form>
+    </div>
+  );
 }

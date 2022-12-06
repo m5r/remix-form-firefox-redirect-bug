@@ -4,10 +4,8 @@ import { commitSession, getSession } from "~/utils/session.server";
 
 export async function loader({ request }: LoaderArgs) {
   const session = await getSession(request);
-  session.unset("authenticated");
+  session.set("authenticated", true);
   return redirect("/", {
-    headers: {
-      "Set-Cookie": await commitSession(session),
-    },
+    headers: { "Set-Cookie": await commitSession(session) },
   });
 }
